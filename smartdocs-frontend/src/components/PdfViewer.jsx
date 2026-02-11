@@ -22,7 +22,7 @@ export default function PdfViewer({ file, page }) {
     );
   }
 
-  const pdfUrl = `http://localhost:8000/uploads/${encodeURIComponent(file)}`;
+  const pdfUrl = `https://pdf-ai-app-bm00.onrender.com/uploads/${encodeURIComponent(file)}`;
 
   return (
     <div className="flex flex-col h-full bg-[#030712] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl animate-in fade-in zoom-in-95 duration-300">
