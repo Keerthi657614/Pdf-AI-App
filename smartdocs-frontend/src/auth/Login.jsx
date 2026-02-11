@@ -9,7 +9,7 @@ export default function Login({ onLoginSuccess }) {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:8000/login", formData);
+      const res = await axios.post("https://pdf-ai-app-bm00.onrender.com/login", formData);
       // Notify parent immediately to swap views
       onLoginSuccess(res.data.username);
     } catch (err) {
