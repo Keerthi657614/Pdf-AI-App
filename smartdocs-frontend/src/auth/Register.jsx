@@ -11,7 +11,7 @@ export default function Register({ onRegisterSuccess }) {
     
     setLoading(true);
     try {
-      await axios.post("http://localhost:8000/register", {
+      await axios.post("https://pdf-ai-app-bm00.onrender.com/register", {
         username: formData.username,
         password: formData.password
       });
