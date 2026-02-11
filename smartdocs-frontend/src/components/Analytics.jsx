@@ -183,7 +183,7 @@ export default function Analytics() {
   const user = localStorage.getItem("user");
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/analytics-data?user=${user}`)
+    axios.get(`https://pdf-ai-app-bm00.onrender.com/analytics-data?user=${user}`)
       .then(res => setData(res.data));
   }, [user]);
 
