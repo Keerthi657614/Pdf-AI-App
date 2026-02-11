@@ -196,7 +196,7 @@ export default function Upload() {
   const fetchData = async () => {
     try {
       // Send user as query param to only get THEIR files
-      const res = await axios.get(`http://localhost:8000/list-uploads?user=${user}`);
+      const res = await axios.get(`https://pdf-ai-app-bm00.onrender.com/list-uploads?user=${user}`);
       setLibrary(res.data.files || []);
       setBackendStats(res.data.stats || { total_chunks: 0, library_size: 0 });
     } catch (err) {
@@ -220,7 +220,7 @@ export default function Upload() {
       const formData = new FormData();
       files.forEach((file) => formData.append("files", file));
       
-      await axios.post(`http://localhost:8000/upload?user=${user}`, formData, {
+      await axios.post(`https://pdf-ai-app-bm00.onrender.com/upload?user=${user}`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
@@ -239,7 +239,7 @@ export default function Upload() {
     setStatus("🚀 Training AI on your private data...");
     try {
       // Pass user to ingestion so the vector DB handles isolation
-      await axios.post(`http://localhost:8000/ingest?user=${user}`);
+      await axios.post(`https://pdf-ai-app-bm00.onrender.com/ingest?user=${user}`);
       setStatus("✨ Ingestion complete!");
       fetchData();
     } catch (err) {
