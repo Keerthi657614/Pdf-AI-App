@@ -248,7 +248,7 @@ export default function Profile({ user, onUpdate }) {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(
     localStorage.getItem("profile_pic")
-      ? `http://localhost:8000${localStorage.getItem("profile_pic")}`
+      ? `https://pdf-ai-app-bm00.onrender.com${localStorage.getItem("profile_pic")}`
       : null
   );
   const [loading, setLoading] = useState(false);
