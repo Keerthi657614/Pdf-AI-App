@@ -1,88 +1,225 @@
 # 🧠 DEVELOPER GUIDE – SmartDocs AI
 
-## Project Structure
+This guide explains system architecture, modules, and extension points.
+
+---
+
+# 🏗️ System Architecture
 ```
-backend/
-frontend/
-utils/
-tests/
-data/
+Frontend (React)
+        ↓
+FastAPI Backend
+        ↓
+PDF Processing Pipeline
+        ↓
+Embedding Generation
+        ↓
+ChromaDB (Vector Store)
+        ↓
+Similarity Search
+        ↓
+GPT-4 Response Generation
 ```
+---
+
+# 📁 Backend Modules
+
+## main.py
+Entry point for FastAPI.
+Defines API endpoints and CORS configuration.
 
 ---
 
-## Backend Modules
+## pdf_processor.py
 
-### pdf_processor.py
-Extracts text using PyMuPDF and pdfplumber.
-Handles metadata extraction and corrupted files.
-
-### text_cleaner.py
-Removes whitespace, headers, special characters.
-Normalizes text.
-
-### text_chunker.py
-Creates overlapping chunks.
-Supports token-based and sentence-based chunking.
-
-### embeddings.py
-Generates OpenAI embeddings.
-Implements retry logic and rate limiting.
-
-### vector_db.py
-Manages ChromaDB persistent storage.
-Supports CRUD operations.
-
-### ingestion_pipeline.py
-Orchestrates complete document ingestion workflow.
-
-### search_engine.py
-Performs similarity search.
-Implements cosine scoring and filtering.
-
-### qa_engine.py
-Constructs prompt.
-Injects context.
-Generates context-aware answers.
-Extracts citations.
-
-### session_manager.py
-Handles session persistence and history storage.
+Responsibilities:
+- Extract text from PDFs using PyMuPDF
+- Fallback to pdfplumber
+- Extract metadata (pages, title, author)
+- Handle corrupted or password-protected files
 
 ---
 
-## RAG Workflow
+## text_cleaner.py
 
-1. Extract text from PDFs.
-2. Clean and normalize.
-3. Chunk text with overlap.
-4. Generate embeddings.
-5. Store vectors in ChromaDB.
-6. Embed user query.
-7. Retrieve top-k relevant chunks.
-8. Inject context into GPT prompt.
-9. Generate grounded response.
+Functions:
+- remove_extra_whitespace()
+- remove_special_characters()
+- normalize_text()
+- remove_headers_footers()
+- clean_text()
 
----
-
-## Testing
-
-All modules include unit tests.
-Integration test validates complete ingestion-to-answer pipeline.
+Purpose:
+Normalize text before chunking.
 
 ---
 
-## Extending the System
+## text_chunker.py
 
-To add new embedding model:
-- Modify embeddings.py
+Features:
+- Token-based chunking (1000 tokens)
+- 200 token overlap
+- Sentence-aware splitting
+- Metadata tracking (chunk_id, page_number)
+
+Why overlap?
+Maintains semantic continuity between chunks.
+
+---
+
+## embeddings.py
+
+Responsibilities:
+- Generate OpenAI embeddings
+- 1536-dimensional vector verification
+- Retry logic with exponential backoff
+- Rate limiting
+- Batch embedding support
+
+Model used:
+text-embedding-ada-002
+
+---
+
+## vector_db.py
+
+Handles:
+- ChromaDB initialization
+- Collection creation
+- Add/update/delete documents
+- Persistent storage
+- Collection statistics
+
+---
+
+## ingestion_pipeline.py
+
+Orchestrates:
+
+PDF → Clean → Chunk → Embed → Store
+
+Includes:
+- Progress tracking
+- Logging
+- Error rollback
+
+---
+
+## search_engine.py
+
+Implements:
+- Query embedding
+- Cosine similarity search
+- Top-k retrieval
+- Threshold filtering (default 0.7)
+- Context window expansion
+
+---
+
+## qa_engine.py
+
+Core logic:
+
+1. Receive user question
+2. Inject retrieved context
+3. Build structured prompt
+4. Call GPT-4
+5. Extract citations
+6. Return grounded response
+
+Includes:
+- Token management
+- Conversation memory
+- Citation parsing
+
+---
+
+# 📡 API Endpoints
+
+POST /upload  
+Upload PDF documents.
+
+POST /query  
+Submit user question.
+
+GET /history  
+Retrieve session Q&A history.
+
+DELETE /clear  
+Clear session data.
+
+---
+
+# 🧪 Testing Strategy
+
+Located in `/tests`:
+
+Unit Tests:
+- test_pdf_processor.py
+- test_text_cleaner.py
+- test_chunker.py
+- test_embeddings.py
+- test_vector_db.py
+- test_search_engine.py
+
+Integration Test:
+- test_integration.py
+
+
+---
+
+# ⚡ Performance Optimizations
+
+- Caching expensive operations
+- Batch embedding generation
+- Persistent vector storage
+- Context window optimization
+- Lazy loading in frontend
+
+---
+
+# 🔐 Security Considerations
+
+- API key stored in `.env`
+- CORS configured
+- File type validation (.pdf only)
+- File size validation (10MB limit)
+- Error handling with custom exceptions
+
+---
+
+# 🔧 Extending the System
+
+To change embedding model:
+Modify `embeddings.py`
 
 To change chunk size:
-- Update text_chunker.py
+Modify `text_chunker.py`
 
-To modify prompt behavior:
-- Edit qa_engine.py
+To switch to GPT-4o:
+Update model name in `qa_engine.py`
+
+To add hybrid search:
+Combine keyword + vector similarity in `search_engine.py`
+
+---
+
+# 🚀 Production Deployment
+
+Backend → Render  
+Frontend → Vercel  
+
+Ensure:
+- Environment variables set
+- CORS configured
+- Persistent storage enabled
+
+---
+
+# 👤 Maintainer
+
+Keerthi Mittapalli  
+AI & ML Developer
 
 
-Run:
-
+Run all tests:
