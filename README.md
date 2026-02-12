@@ -27,6 +27,7 @@ All answers are generated strictly from retrieved document context with proper s
 - 🧪 Unit & Integration Testing (pytest)
 
 ---
+```
 PDF Upload
 ↓
 PDFProcessor
@@ -44,7 +45,7 @@ SearchEngine
 QAEngine
 ↓
 React UI
-
+```
 ---
 
 ## 🛠️ Tech Stack
