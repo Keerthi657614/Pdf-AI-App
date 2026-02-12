@@ -222,4 +222,3 @@ Keerthi Mittapalli
 AI & ML Developer
 
 
-Run all tests:
