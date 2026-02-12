@@ -224,63 +224,159 @@ test_search_engine.py - Similarity search
 test_qa_engine.py - Q&A generation
 test_ingestion_pipeline.py - Full pipeline
 test_openai_connection.py - API connectivity
+## 📖 Documentation
+
+The project includes comprehensive documentation for both end users and developers:
+
+- **USER_GUIDE.md** – Step-by-step guide on how to use the application.
+- **DEVELOPER_GUIDE.md** – Detailed explanation of system architecture, modules, API design, and extension points.
+
+Please refer to these documents for deeper insights into usage and implementation.
+
+---
+
+## 🔧 API Endpoints
+
+The FastAPI backend exposes the following core endpoints:
+
+### 📤 Document Management
+
+- `POST /upload`  
+  Upload one or more PDF documents for processing and indexing.
+
+---
+
+### ❓ Query Processing
+
+- `POST /query`  
+  Submit a user question and receive a context-aware response generated from indexed documents.
+
+---
+
+### 🕘 Session Management
+
+- `GET /history`  
+  Retrieve complete Q&A session history.
+
+- `DELETE /clear`  
+  Clear current session data and reset conversation state.
+
+For detailed request/response schemas and implementation details, see **DEVELOPER_GUIDE.md**.
+
+---
+
+## 🌟 Key Implementation Details
+
+### 📄 Text Processing Pipeline
+
+1. **Extraction**  
+   PyMuPDF extracts raw text from uploaded PDFs.  
+   pdfplumber is used as a fallback for complex layouts.
+
+2. **Cleaning**  
+   - Normalize whitespace  
+   - Remove special characters  
+   - Standardize encoding  
+
+3. **Chunking**  
+   - Token-based chunking (1000 tokens)  
+   - 200-token overlap  
+   - Metadata tracking (file name, page number, chunk ID)
+
+4. **Embedding**  
+   - Each chunk converted into a 1536-dimensional vector  
+   - Uses OpenAI `text-embedding-ada-002` model  
+
+5. **Storage**  
+   - Embeddings stored in ChromaDB  
+   - Metadata preserved for citation and traceability  
+
+---
+
+### 🔍 Query Processing Workflow
+
+1. **Vectorization**  
+   User query converted into embedding.
+
+2. **Similarity Search**  
+   - Cosine similarity used for matching  
+   - Top-k results retrieved  
+   - Threshold filtering removes low-relevance matches  
+
+3. **Context Construction**  
+   Relevant chunks compiled into structured prompt.
+
+4. **Response Generation**  
+   GPT-4 generates answer strictly based on provided context.
+
+---
+
+### 📌 Source Attribution
+
+Every response includes:
+
+- Exact source document names
+- Page references (when available)
+- Relevant context snippets
+- Confidence/relevance scores
+
+This ensures transparency and minimizes hallucination.
+
+---
+
+## 🔐 Security & Best Practices
+
+- API keys stored securely in `.env` (never committed to version control).
+- Environment variables used for sensitive configurations.
+- Strict PDF file validation (type and size checks).
+- Input sanitization for user queries.
+- Rate limiting recommended for production deployment.
+- HTTPS required for secure API communication.
+- CORS properly configured for frontend-backend interaction.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome.
+
+1. Create a feature branch:
+
 ```
-#📖 Documentation
+git checkout -b feature/your-feature-name
 ```
-USER_GUIDE.md - How to use the application
-DEVELOPER_GUIDE.md - Development setup and architecture details
 
-##🔧 API Endpoints
+2. Commit your changes:
+```
+git commit -m "Add meaningful feature description"
+```
 
-Main Endpoints
-POST /upload - Upload PDF documents
-POST /query - Submit a question
-GET /history - Retrieve Q&A history
-DELETE /clear - Clear session data
-See DEVELOPER_GUIDE.md for detailed API documentation.
+3. Push to your branch:
 
-##🌟 Key Implementation Details
+```
+git push origin feature/your-feature-name
+```
 
-Text Processing Pipeline
-Extraction - PyMuPDF extracts raw text from PDFs
-Cleaning - Remove special characters, extra whitespace
-Chunking - Split text into overlapping chunks (token-based)
-Embedding - Convert chunks to 1536-dim vectors
-Storage - Store in ChromaDB with metadata
-Query Processing
-Vectorization - Convert query to embedding
-Search - Find top-k similar chunks (cosine similarity)
-Threshold Filtering - Filter low-relevance results
-Context Building - Compile relevant chunks
-Generation - GPT-4 generates response with citations
-Source Attribution
-All responses include:
+4. Open a Pull Request.
 
-Exact source document names
-Relevant chunk snippets
-Confidence scores
-Page references (when available)
+Please ensure all tests pass before submitting changes.
 
-##🔐 Security Notes
+---
 
-Store API keys in .env file (never commit!)
-Use environment variables for sensitive data
-Validate all file uploads
-Implement rate limiting in production
-Use HTTPS for API communications
+## 👤 Author
 
-##**🤝 Contributing**
+**Keerthi Mittapalli**  
+AI & Machine Learning Developer  
+SmartDocs AI Internship Project
 
-Create a feature branch (git checkout -b feature/amazing-feature)
-Commit your changes (git commit -m 'Add amazing feature')
-Push to the branch (git push origin feature/amazing-feature)
-Open a Pull Request
+---
 
+## 💬 Support
 
-**👤 Author**
+For questions, issues, or feature requests:
 
-Keerthi Mittapalli
+- Open a GitHub Issue  
+- Refer to USER_GUIDE.md or DEVELOPER_GUIDE.md  
+- Review logs for debugging information  
 
-**💬 Support**
-For issues, questions, or suggestions, please open a GitHub issue or refer to the documentation files.
-- ✅ Has proper formatting and organization
+Thank you for using SmartDocs AI 🚀
